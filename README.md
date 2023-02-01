@@ -43,5 +43,6 @@ Options:
   -t, --table-name TEXT  Table name  [default: df]
   -c, --cols TEXT        Column names, comma separated
   --auto                 Autogenerate column names: a b c ...
+  --save                 Save the sql file to .tosql.db
   --help                 Show this message and exit.
 ```

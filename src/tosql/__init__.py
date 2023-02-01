@@ -101,8 +101,11 @@ def run_sql(query, df, table_name):
 @click.option(
     "--auto", is_flag=True, default=False, help="Autogenerate column names: a b c ..."
 )
+@click.option(
+    "--save", is_flag=True, default=False, help="Save the sql file to .tosql.db"
+)
 @click.argument("sql", default="SELECT * FROM df")
-def main(input, output, sql_file, table_name, cols, auto, sql):
+def main(input, output, sql_file, table_name, cols, auto, save, sql):
     df = get_df(input, cols, auto)
     out = run_sql(open(sql_file).read() if sql_file else sql, df, table_name)
     records = out.to_dict(orient="records")
@@ -114,6 +117,12 @@ def main(input, output, sql_file, table_name, cols, auto, sql):
     else:
         for record in records:
             sys.stdout.buffer.write(f"{json.dumps(record)}\n".encode())
+
+    if save:
+        if os.path.exists(".tosql.db"):
+            os.remove(".tosql.db")
+        conn = sqlite3.connect(".tosql.db")
+        df.to_sql(table_name, conn, index=False)
 
 
 if __name__ == "__main__":
