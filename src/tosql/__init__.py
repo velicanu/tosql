@@ -87,6 +87,28 @@ def run_sql(query, df, table_name):
     return out
 
 
+def save_csv(df, output):
+    df.to_csv(output if output else sys.stdout.buffer, index=False)
+
+
+def save_json(df, output):
+    records = df.to_dict(orient="records")
+    if output:
+        with open(output, "w") as out:
+            for record in records:
+                out.write(f"{json.dumps(record)}\n")
+    else:
+        for record in records:
+            sys.stdout.buffer.write(f"{json.dumps(record)}\n".encode())
+
+
+def save_db(df, table_name):
+    if os.path.exists(".tosql.db"):
+        os.remove(".tosql.db")
+    conn = sqlite3.connect(".tosql.db")
+    df.to_sql(table_name, conn, index=False)
+
+
 @click.command()
 @click.version_option(package_name="tosql")
 @click.option(
@@ -104,25 +126,19 @@ def run_sql(query, df, table_name):
 @click.option(
     "--save", is_flag=True, default=False, help="Save the sql file to .tosql.db"
 )
+@click.option("--csv", is_flag=True, default=False, help="Output csv instead of json")
 @click.argument("sql", default="SELECT * FROM df")
-def main(input, output, sql_file, table_name, cols, auto, save, sql):
-    df = get_df(input, cols, auto)
-    out = run_sql(open(sql_file).read() if sql_file else sql, df, table_name)
-    records = out.to_dict(orient="records")
+def main(input, output, sql_file, table_name, cols, auto, save, csv, sql):
+    df_in = get_df(input, cols, auto)
+    df_out = run_sql(open(sql_file).read() if sql_file else sql, df_in, table_name)
 
-    if output:
-        with open(output, "w") as out:
-            for record in records:
-                out.write(f"{json.dumps(record)}\n")
+    if csv:
+        save_csv(df_out, output)
     else:
-        for record in records:
-            sys.stdout.buffer.write(f"{json.dumps(record)}\n".encode())
+        save_json(df_out, output)
 
     if save:
-        if os.path.exists(".tosql.db"):
-            os.remove(".tosql.db")
-        conn = sqlite3.connect(".tosql.db")
-        df.to_sql(table_name, conn, index=False)
+        save_db(df_in, table_name)
 
 
 if __name__ == "__main__":

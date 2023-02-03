@@ -8,7 +8,7 @@ README = open(os.path.join(SCRIPT_DIR, "README.md")).read()
 
 setup(
     name="tosql",
-    version="0.0.2",
+    version="0.0.3",
     description="tosql - pipe data to sql queries",
     long_description=README,
     long_description_content_type="text/markdown",
