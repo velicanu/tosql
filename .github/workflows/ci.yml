@@ -14,11 +14,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: debug
-        run: |
-          echo ${{ github.ref }}
-          echo ${{ github.event_name }}
-          exit 1
       - uses: actions/checkout@v3
       - name: Set up python
         uses: actions/setup-python@v4
@@ -42,7 +37,7 @@ jobs:
           source venv/bin/activate
           ./scripts/checks.sh
       - name: publish
-        if: github.event.pull_request.merged == 'true'
+        if: github.event_name == 'push'
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
