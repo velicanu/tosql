@@ -52,7 +52,7 @@ def test_get_df_csv_stdin():
         with open(tmp_input, "w") as f:
             f.write(CSV_DATA)
 
-        cmd = f"""cat {tmp_input} | tosql "SELECT * FROM df" > {tmp_output}  """
+        cmd = f"""cat {tmp_input} | tosql "SELECT * FROM a" > {tmp_output}  """
         ps = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -69,7 +69,7 @@ def test_get_df_csv_option():
         with open(tmp_input, "w") as f:
             f.write(CSV_DATA)
 
-        cmd = f"""tosql -i {tmp_input} "SELECT * FROM df" > {tmp_output}  """
+        cmd = f"""tosql -i {tmp_input} "SELECT * FROM a" > {tmp_output}  """
         ps = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -87,7 +87,7 @@ def test_get_df_json_option_output():
             for line in JSON_DATA:
                 f.write(f"{json.dumps(line)}\n")
 
-        cmd = f"""tosql -i {tmp_input} -o {tmp_output} "SELECT * FROM df" """
+        cmd = f"""tosql -i {tmp_input} -o {tmp_output} "SELECT * FROM a" """
         ps = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -129,7 +129,7 @@ def test_get_df_space_data():
         with open(tmp_input, "w") as f:
             f.write(SPACE_DATA)
 
-        cmd = f"""cat {tmp_input} | tosql "SELECT * FROM df" > {tmp_output}  """
+        cmd = f"""cat {tmp_input} | tosql "SELECT * FROM a" > {tmp_output}  """
         ps = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -139,24 +139,7 @@ def test_get_df_space_data():
         assert actual == EXPECTED_SPACE_DATA
 
 
-def test_get_df_space_data_custom_table_name():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_input = os.path.join(tmpdir, "input")
-        tmp_output = os.path.join(tmpdir, "output")
-        with open(tmp_input, "w") as f:
-            f.write(SPACE_DATA)
-
-        cmd = f"""cat {tmp_input} | tosql -t foo "SELECT * FROM foo" > {tmp_output} """
-        ps = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-        )
-        ps.wait()
-
-        actual = [json.loads(line) for line in open(tmp_output)]
-        assert actual == EXPECTED_SPACE_DATA
-
-
-SQL_QUERY = """SELECT * FROM df WHERE name = "setup.py"
+SQL_QUERY = """SELECT * FROM a WHERE name = "setup.py"
 """
 
 
@@ -217,7 +200,7 @@ def test_get_df_space_data_cols():
         with open(tmp_input, "w") as f:
             f.write(SPACE_DATA_NO_HEADER)
 
-        cmd = f"""cat {tmp_input} | tosql -c perm,link,user,group,size,mon,day,hour,name "SELECT * FROM df" > {tmp_output}  """
+        cmd = f"""cat {tmp_input} | tosql -c perm,link,user,group,size,mon,day,hour,name "SELECT * FROM a" > {tmp_output}  """
         ps = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
@@ -229,26 +212,26 @@ def test_get_df_space_data_cols():
 
 EXPECTED_SPACE_DATA_NO_HEADER_AUTO = [
     {
-        "a": "-rw-r--r--",
-        "b": 1,
-        "c": "dragosvelicanu",
-        "d": "staff",
-        "e": 846,
-        "f": "Jan",
-        "g": 31,
-        "h": "19:13",
-        "i": "setup.py",
+        "c_a": "-rw-r--r--",
+        "c_b": 1,
+        "c_c": "dragosvelicanu",
+        "c_d": "staff",
+        "c_e": 846,
+        "c_f": "Jan",
+        "c_g": 31,
+        "c_h": "19:13",
+        "c_i": "setup.py",
     },
     {
-        "a": "drwxr-xr-x",
-        "b": 5,
-        "c": "dragosvelicanu",
-        "d": "staff",
-        "e": 160,
-        "f": "Jan",
-        "g": 31,
-        "h": "19:49",
-        "i": "tests",
+        "c_a": "drwxr-xr-x",
+        "c_b": 5,
+        "c_c": "dragosvelicanu",
+        "c_d": "staff",
+        "c_e": 160,
+        "c_f": "Jan",
+        "c_g": 31,
+        "c_h": "19:49",
+        "c_i": "tests",
     },
 ]
 
@@ -260,7 +243,7 @@ def test_get_df_space_data_auto():
         with open(tmp_input, "w") as f:
             f.write(SPACE_DATA_NO_HEADER)
 
-        cmd = f"""cat {tmp_input} | tosql --auto "SELECT * FROM df" > {tmp_output}  """
+        cmd = f"""cat {tmp_input} | tosql --auto "SELECT * FROM a" > {tmp_output}  """
         ps = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         )
