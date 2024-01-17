@@ -39,7 +39,9 @@ def get_df(input, cols, auto) -> pd.DataFrame:
                 out.write(" ".join(cols.split(",")) + "\n")
             elif auto:
                 columns = [c for c in first_line.split(" ") if c]
-                auto_headers = [col for _, col in zip(columns, string.ascii_lowercase)]
+                auto_headers = [
+                    f"c_{col}" for _, col in zip(columns, string.ascii_lowercase)
+                ]
                 out.write(" ".join(auto_headers) + "\n")
             # needed to cache when reading from stdin
             out.write(open(pre_input).read())
@@ -79,9 +81,10 @@ def get_df(input, cols, auto) -> pd.DataFrame:
     raise ValueError("could not parse the input")
 
 
-def run_sql(query, df, table_name):
+def run_sql(query, dfs):
     with sqlite3.connect(":memory:") as conn:
-        df.to_sql(table_name, conn, index=False)
+        for df, table_name in zip(dfs, string.ascii_lowercase):
+            df.to_sql(table_name, conn, index=False)
         out = pd.read_sql(query, conn)
 
     return out
@@ -112,25 +115,30 @@ def save_db(df, table_name):
 @click.command()
 @click.version_option(package_name="tosql")
 @click.option(
-    "-i", "--input", type=click.File(), default="-", help="Input file, default stdin"
+    "-i",
+    "--input",
+    type=click.File(),
+    default=["-"],
+    multiple=True,
+    help="Input file, default stdin",
 )
 @click.option("-o", "--output", type=str, help="Output file, default stdout")
 @click.option("-f", "--sql-file", type=str, help="File containing SQL query")
-@click.option(
-    "-t", "--table-name", type=str, default="df", help="Table name", show_default=True
-)
 @click.option("-c", "--cols", type=str, help="Column names, comma separated")
 @click.option(
-    "--auto", is_flag=True, default=False, help="Autogenerate column names: a b c ..."
+    "--auto",
+    is_flag=True,
+    default=False,
+    help="Autogenerate column names: c_a c_b c_c ...",
 )
 @click.option(
     "--save", is_flag=True, default=False, help="Save the sql file to .tosql.db"
 )
 @click.option("--csv", is_flag=True, default=False, help="Output csv instead of json")
-@click.argument("sql", default="SELECT * FROM df")
-def main(input, output, sql_file, table_name, cols, auto, save, csv, sql):
-    df_in = get_df(input, cols, auto)
-    df_out = run_sql(open(sql_file).read() if sql_file else sql, df_in, table_name)
+@click.argument("sql", default="SELECT * FROM a")
+def main(input, output, sql_file, cols, auto, save, csv, sql):
+    dfs_in = [get_df(input_, cols, auto) for input_ in input]
+    df_out = run_sql(open(sql_file).read() if sql_file else sql, dfs_in)
 
     if csv:
         save_csv(df_out, output)
@@ -138,7 +146,7 @@ def main(input, output, sql_file, table_name, cols, auto, save, csv, sql):
         save_json(df_out, output)
 
     if save:
-        save_db(df_in, table_name)
+        save_db(dfs_in)
 
 
 if __name__ == "__main__":
