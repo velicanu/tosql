@@ -30,8 +30,8 @@ jobs:
           steps.cache.outputs.cache-hit != 'true'
         run: |
           python -m venv venv && source venv/bin/activate
-          pip install .
           pip install pytest ruff wheel twine
+          pip install .
       - name: checks
         run: |
           source venv/bin/activate
