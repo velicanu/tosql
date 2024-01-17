@@ -8,7 +8,7 @@ README = open(os.path.join(SCRIPT_DIR, "README.md")).read()
 
 setup(
     name="tosql",
-    version="0.0.3",
+    version="0.0.4",
     description="tosql - pipe data to sql queries",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -24,9 +24,6 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=["click", "pandas"],
-    extras_require={
-        "test": ["pytest"],
-    },
     entry_points={
         "console_scripts": [
             "tosql=tosql:main",
