@@ -24,9 +24,6 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=["click", "pandas"],
-    extras_require={
-        "test": ["pytest"],
-    },
     entry_points={
         "console_scripts": [
             "tosql=tosql:main",
