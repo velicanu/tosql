@@ -33,11 +33,13 @@ jobs:
           echo Running tests...
           pytest
       - name: publish
-        if: github.event_name == 'push'
+        # if: github.event_name == 'push'
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           source .venv/bin/activate
-          uv venv
-          ./scripts/publish.sh
+          uv pip install setuptools
+          python setup.py sdist bdist_wheel
+          twine check dist/*
+          twine upload dist/*
