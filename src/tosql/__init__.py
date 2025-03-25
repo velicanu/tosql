@@ -58,7 +58,7 @@ def get_df(input, cols, auto, sep) -> pd.DataFrame:
 
         # if that fails try reading as csv
         try:
-            df = pd.read_csv(input_)
+            df = pd.read_csv(input_, engine="python", sep=sep)
             if input.name == "<stdin>" and len(df.columns) < 2:
                 pass
             else:
