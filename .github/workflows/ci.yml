@@ -16,13 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
       - name: Install dependencies
         run: |
           pip install uv
           uv venv
-          uv pip install pytest ruff wheel twine --system
-          uv pip install . --system
+          uv pip install pytest ruff wheel twine
+          uv pip install .
       - name: checks
         run: |
           ./scripts/checks.sh
