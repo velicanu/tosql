@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
-          uv pip install pytest ruff wheel twine
-          uv pip install .
+          uv pip install pytest ruff wheel twine --system
+          uv pip install . --system
       - name: checks
         run: |
           ./scripts/checks.sh
