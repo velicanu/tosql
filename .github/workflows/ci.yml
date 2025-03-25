@@ -26,7 +26,12 @@ jobs:
       - name: checks
         run: |
           source .venv/bin/activate
-          ./scripts/checks.sh
+          echo Checking formatting...
+          ruff format --check .
+          echo Checking linting...
+          ruff check .
+          echo Running tests...
+          pytest
       - name: publish
         if: github.event_name == 'push'
         env:
