@@ -33,7 +33,7 @@ jobs:
           echo Running tests...
           pytest
       - name: publish
-        # if: github.event_name == 'push'
+        if: github.event_name == 'push'
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
