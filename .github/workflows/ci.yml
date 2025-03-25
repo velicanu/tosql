@@ -35,9 +35,8 @@ jobs:
       - name: publish
         if: github.event_name == 'push'
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           source .venv/bin/activate
-          uv venv
-          ./scripts/publish.sh
+          uv build
+          uv publish
