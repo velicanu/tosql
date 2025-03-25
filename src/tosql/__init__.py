@@ -11,7 +11,7 @@ import click
 import pandas as pd
 
 
-def get_df(input, cols, auto) -> pd.DataFrame:
+def get_df(input, cols, auto, sep) -> pd.DataFrame:
     """
     Tries to read the input file and return a dataframe.
     Will first try to read the input as a json file,
@@ -24,7 +24,7 @@ def get_df(input, cols, auto) -> pd.DataFrame:
     if input.name.endswith(".json"):
         return pd.read_json(input, lines=True)
     if input.name.endswith(".csv"):
-        return pd.read_csv(input)
+        return pd.read_csv(input, engine="python", sep=sep)
 
     # next use heuristics
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -135,9 +135,10 @@ def save_db(df, table_name):
     "--save", is_flag=True, default=False, help="Save the sql file to .tosql.db"
 )
 @click.option("--csv", is_flag=True, default=False, help="Output csv instead of json")
+@click.option("-s", "--sep", type=str, help="Seperator for csv files")
 @click.argument("sql", default="SELECT * FROM a")
-def main(input, output, sql_file, cols, auto, save, csv, sql):
-    dfs_in = [get_df(input_, cols, auto) for input_ in input]
+def main(input, output, sql_file, cols, auto, save, csv, sep, sql):
+    dfs_in = [get_df(input_, cols, auto, sep) for input_ in input]
     df_out = run_sql(open(sql_file).read() if sql_file else sql, dfs_in)
 
     if csv:
