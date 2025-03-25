@@ -25,7 +25,7 @@ jobs:
           uv pip install .
       - name: checks
         run: |
-          uv venv
+          source .venv/bin/activate
           ./scripts/checks.sh
       - name: publish
         if: github.event_name == 'push'
@@ -33,5 +33,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
+          source .venv/bin/activate
           uv venv
           ./scripts/publish.sh
