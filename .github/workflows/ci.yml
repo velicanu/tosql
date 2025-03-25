@@ -17,24 +17,13 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set up python
         uses: actions/setup-python@v4
-        id: py
-        with:
-          python-version: "3.11"
-      - uses: actions/cache@v3
-        id: cache
-        with:
-          path: venv
-          key: ${{ runner.os }}-${{ steps.py.outputs.python-version }}-${{ hashFiles('setup.py') }}
       - name: Install dependencies
-        if: |
-          steps.cache.outputs.cache-hit != 'true'
         run: |
-          python -m venv venv && source venv/bin/activate
-          pip install pytest ruff wheel twine
-          pip install .
+          pip install uv
+          uv pip install pytest ruff wheel twine
+          uv pip install .
       - name: checks
         run: |
-          source venv/bin/activate
           ./scripts/checks.sh
       - name: publish
         if: github.event_name == 'push'
@@ -42,5 +31,4 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          source venv/bin/activate
           ./scripts/publish.sh
